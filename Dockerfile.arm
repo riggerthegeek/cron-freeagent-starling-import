@@ -1,0 +1,36 @@
+FROM resin/raspberrypi3-alpine-node:8-slim
+
+ARG SUPERCRONIC_VERSION=0.1.5
+ARG SUPERCRONIC_SHA1SUM=9aeb41e00cc7b71d30d33c57a2333f2c2581a201
+
+ENV SUPERCRONIC=supercronic-linux-amd64
+
+ENV CRON_SCHEDULE="0 2 * * *"
+ENV CRON_COMMAND="node /home/node/app/import.js"
+
+ENV CACHE_MAX=500
+ENV CACHE_MAX_AGE=86400000
+ENV FAAS_URL="http://192.168.0.150:8080"
+ENV NOTIFY_SUBJECT="Cron Starling - "
+
+RUN [ "cross-build-start" ]
+
+RUN apk add --no-cache curl \
+  && curl -fsSLO "https://github.com/aptible/supercronic/releases/download/v${SUPERCRONIC_VERSION}/${SUPERCRONIC}" \
+  && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
+  && chmod +x "$SUPERCRONIC" \
+  && mv "$SUPERCRONIC" "/usr/local/bin/supercronic" \
+  && apk del curl
+
+WORKDIR /home/node/app
+
+ADD crontab.sh .
+ADD import.js .
+ADD package.json .
+ADD package-lock.json .
+
+RUN npm install --production
+
+RUN [ "cross-build-end" ]
+
+CMD [ "/bin/sh", "crontab.sh" ]
