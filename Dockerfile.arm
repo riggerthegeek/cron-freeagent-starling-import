@@ -1,9 +1,9 @@
 FROM resin/raspberrypi3-alpine-node:8-slim
 
 ARG SUPERCRONIC_VERSION=0.1.5
-ARG SUPERCRONIC_SHA1SUM=9aeb41e00cc7b71d30d33c57a2333f2c2581a201
+ARG SUPERCRONIC_SHA1SUM=e434438805b65d770399b46a5f5cd7b3bb026745
 
-ENV SUPERCRONIC=supercronic-linux-amd64
+ENV SUPERCRONIC=supercronic-linux-arm
 
 ENV CRON_SCHEDULE="0 2 * * *"
 ENV CRON_COMMAND="node /home/node/app/import.js"
