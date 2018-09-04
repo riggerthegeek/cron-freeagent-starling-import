@@ -1,6 +1,6 @@
 {
   "name": "cron-freeagent-starling-import",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Export Starling transactions into FreeAgent",
   "main": "import.js",
   "scripts": {
