@@ -35,7 +35,7 @@ const config = {
   },
   starling: {
     from: process.env.STARLING_FROM || '-7 days',
-    token: process.env.STARLING_TOKEN
+    token: secretOrEnvvar('/run/secrets/cron-starling-token', 'STARLING_TOKEN')
   }
 };
 
