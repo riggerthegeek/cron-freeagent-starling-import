@@ -21,7 +21,7 @@ const config = {
   },
   freeagent: {
     accountId: secretOrEnvvar('/run/secrets/cron-starling-freeagent-account-id', 'FREEAGENT_ACCOUNT_ID'),
-    token: secretOrEnvvar('/run/secrets/cron-starling-freeagent-token', 'FREEAGENT_TOKEN'),
+    token: secretOrEnvvar('/run/secrets/cron-starling-freeagent-token', 'FREEAGENT_TOKEN')
   },
   mailgun: {
     domain: secretOrEnvvar('/run/secrets/cron-starling-mailgun-domain', 'MAILGUN_DOMAIN'),
@@ -36,7 +36,7 @@ const config = {
   starling: {
     from: process.env.STARLING_FROM || '-7 days',
     token: process.env.STARLING_TOKEN
-  },
+  }
 };
 
 function callSnitch () {
@@ -144,7 +144,7 @@ Promise.resolve()
     const fromDate = new Date(Date.now() + ms(config.starling.from));
 
     logger('Looking for transactions from date', {
-      fromDate,
+      fromDate
     });
 
     return faasRequest({
@@ -153,20 +153,20 @@ Promise.resolve()
         method: 'getTransactions',
         refreshToken: config.starling.token,
         args: [{
-          from: fromDate,
-        }],
-      },
+          from: fromDate
+        }]
+      }
     });
   })
   .then(({ transactions }) => {
     const data = transactions.map(transaction => ({
       date: new Date(transaction.created),
       amount: transaction.amount,
-      description: transaction.narrative,
+      description: transaction.narrative
     }));
 
     logger('Retrieved transactions and uploading to FreeAgent', {
-      count: data.length,
+      count: data.length
     });
 
     return faasRequest({
@@ -176,9 +176,9 @@ Promise.resolve()
         refreshToken: config.freeagent.token,
         args: [
           config.freeagent.accountId,
-          data,
-        ],
-      },
+          data
+        ]
+      }
     });
   })
   .then(() => {
@@ -187,6 +187,6 @@ Promise.resolve()
   .catch(err => notifyUser('Error uploading transactions', err.stack))
   .then(() => {
     logger('Cronjob finished', {
-      executionTime: Date.now() - startDate,
+      executionTime: Date.now() - startDate
     });
   });
